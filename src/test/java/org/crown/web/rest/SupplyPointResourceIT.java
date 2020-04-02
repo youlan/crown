@@ -283,7 +283,7 @@ public class SupplyPointResourceIT {
             .andExpect(jsonPath("$.[*].priority").value(hasItem(DEFAULT_PRIORITY)))
             .andExpect(jsonPath("$.[*].notes").value(hasItem(DEFAULT_NOTES)));
     }
-    
+
     @Test
     public void getSupplyPoint() throws Exception {
         // Initialize the database

@@ -13,6 +13,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.geo.Circle;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
+import org.springframework.data.mongodb.core.index.GeospatialIndex;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -20,9 +24,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Collections;
 import java.util.List;
 
+import static java.util.stream.Collectors.joining;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
 import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.core.Is.is;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -281,7 +288,7 @@ public class RequestPointResourceIT {
             .andExpect(jsonPath("$.[*].priority").value(hasItem(DEFAULT_PRIORITY)))
             .andExpect(jsonPath("$.[*].notes").value(hasItem(DEFAULT_NOTES)));
     }
-    
+
     @Test
     public void getRequestPoint() throws Exception {
         // Initialize the database
@@ -407,31 +414,31 @@ public class RequestPointResourceIT {
         // Validate the RequestPoint in Elasticsearch
         verify(mockRequestPointSearchRepository, times(1)).deleteById(requestPoint.getId());
     }
-
+    @Autowired
+    MongoTemplate template;
     @Test
     public void searchRequestPoint() throws Exception {
         // Initialize the database
         requestPointRepository.save(requestPoint);
         when(mockRequestPointSearchRepository.search(queryStringQuery("id:" + requestPoint.getId())))
             .thenReturn(Collections.singletonList(requestPoint));
-        // Search the requestPoint
-        restRequestPointMockMvc.perform(get("/api/_search/request-points?query=id:" + requestPoint.getId()))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(requestPoint.getId())))
-            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
-            .andExpect(jsonPath("$.[*].address").value(hasItem(DEFAULT_ADDRESS)))
-            .andExpect(jsonPath("$.[*].primaryContactName").value(hasItem(DEFAULT_PRIMARY_CONTACT_NAME)))
-            .andExpect(jsonPath("$.[*].zip").value(hasItem(DEFAULT_ZIP)))
-            .andExpect(jsonPath("$.[*].phonenumber").value(hasItem(DEFAULT_PHONENUMBER)))
-            .andExpect(jsonPath("$.[*].latx").value(hasItem(DEFAULT_LATX.doubleValue())))
-            .andExpect(jsonPath("$.[*].longy").value(hasItem(DEFAULT_LONGY.doubleValue())))
-            .andExpect(jsonPath("$.[*].city").value(hasItem(DEFAULT_CITY)))
-            .andExpect(jsonPath("$.[*].state").value(hasItem(DEFAULT_STATE)))
-            .andExpect(jsonPath("$.[*].isDistributor").value(hasItem(DEFAULT_IS_DISTRIBUTOR.booleanValue())))
-            .andExpect(jsonPath("$.[*].isHealthcare").value(hasItem(DEFAULT_IS_HEALTHCARE.booleanValue())))
-            .andExpect(jsonPath("$.[*].hasSterilization").value(hasItem(DEFAULT_HAS_STERILIZATION.booleanValue())))
-            .andExpect(jsonPath("$.[*].priority").value(hasItem(DEFAULT_PRIORITY)))
-            .andExpect(jsonPath("$.[*].notes").value(hasItem(DEFAULT_NOTES)));
+            template.indexOps(RequestPoint.class).ensureIndex( new GeospatialIndex("position") );
+        requestPointRepository.save( getMockRequestPoint("A", new GeoJsonPoint( 0.001, -0.002)) );
+        requestPointRepository.save( getMockRequestPoint("B", new GeoJsonPoint(  1, 1)) );
+        requestPointRepository.save( getMockRequestPoint("C", new GeoJsonPoint(  0.5, 0.5)) );
+        requestPointRepository.save( getMockRequestPoint("D", new GeoJsonPoint(  -0.5, -0.5)));
+
+        List<RequestPoint> points = requestPointRepository.findByPositionWithin(new Circle(0,0, 0.75) );
+
+        System.out.println("bbbb");
+        }
+
+    private RequestPoint getMockRequestPoint(String name, GeoJsonPoint point) {
+        RequestPoint requestPoint = new RequestPoint();
+        requestPoint.setPosition(new double[]{point.getX(), point.getY()});
+        requestPoint.setName(name);
+        requestPoint.setPrimaryContactName(name);
+        requestPoint.setZip("0001");
+        return requestPoint;
     }
 }

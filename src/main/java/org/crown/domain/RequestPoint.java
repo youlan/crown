@@ -1,6 +1,8 @@
 package org.crown.domain;
 
+import com.mongodb.client.model.geojson.Point;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -23,6 +25,17 @@ public class RequestPoint implements Serializable {
 
     @Id
     private String id;
+
+
+    private double[] position;
+
+    public double[]  getPosition() {
+        return position;
+    }
+
+    public void setPosition(double[]  pos) {
+        this.position = pos;
+    }
 
     @NotNull
     @Field("name")
