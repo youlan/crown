@@ -416,6 +416,7 @@ public class RequestPointResourceIT {
     }
     @Autowired
     MongoTemplate template;
+
     @Test
     public void searchRequestPoint() throws Exception {
         // Initialize the database

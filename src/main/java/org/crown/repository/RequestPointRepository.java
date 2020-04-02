@@ -19,6 +19,7 @@ import java.util.List;
 @SuppressWarnings("unused")
 @Repository
 public interface RequestPointRepository extends MongoRepository<RequestPoint, String> {
+    //https://blog.codecentric.de/en/2012/02/spring-data-mongodb-geospatial-queries/
     List<RequestPoint> findByPositionWithin(Circle circle);
 
     List<RequestPoint> findByPositionNear(Point point, Distance distance);
