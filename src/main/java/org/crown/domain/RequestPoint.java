@@ -26,7 +26,7 @@ public class RequestPoint implements Serializable {
     @Id
     private String id;
 
-
+    @Field("position")
     private double[] position;
 
     public double[]  getPosition() {
