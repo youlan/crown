@@ -21,8 +21,8 @@ Steps
    target: `http${options.tls ? 's' : ''}://crown-dev.herokuapp.com`,
    secure: true,
 
-   run
-   npm run start-tls
+   Execute
+   `npm run start-tls`
 
 ## FRONTEND WITH local backend
 
