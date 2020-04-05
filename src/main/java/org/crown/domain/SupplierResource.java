@@ -29,6 +29,10 @@ public class SupplierResource implements Serializable {
     private Double cost = 0.0;
 
     GeoJsonPoint position;
+
+	private String sourceId;
+
+	private String sourceName;
     
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public String getId() {
@@ -73,7 +77,27 @@ public class SupplierResource implements Serializable {
 	public void setPosition(GeoJsonPoint pos) {
 		this.position = pos;
 	}
-    
+	
+	public void setSourceName(String sourceName)
+	{
+		this.sourceName = sourceName;
+	}
+
+	public String getSourceName()
+	{
+		return this.sourceName;
+	}
+	
+	public void setSourceId(String sourceId)
+	{
+		this.sourceId = sourceId;
+	}
+
+	public String getSourceId()
+	{
+		return this.sourceId;
+	}
+	
     @Override
     public boolean equals(Object o) {
         if (this == o) {

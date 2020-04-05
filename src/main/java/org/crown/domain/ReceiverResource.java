@@ -41,6 +41,11 @@ public class ReceiverResource implements Serializable {
     // geo spatial position
     private GeoJsonPoint position;
 
+    @Field("sourceId")
+	private String sourceId;
+
+	private String sourceName;
+
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public String getId() {
         return id;
@@ -139,7 +144,26 @@ public class ReceiverResource implements Serializable {
 	public void setPosition(GeoJsonPoint pos) {
 		this.position = pos;
 	}
+	
+	public void setSourceName(String sourceName)
+	{
+		this.sourceName = sourceName;
+	}
 
+	public String getSourceName()
+	{
+		return this.sourceName;
+	}
+	
+	public void setSourceId(String sourceId)
+	{
+		this.sourceId = sourceId;
+	}
+
+	public String getSourceId()
+	{
+		return this.sourceId;
+	}
     @Override
     public String toString() {
         return "ReceiverResource{" +
