@@ -59,10 +59,12 @@ class LeftPanelComponent extends React.Component<Props> {
           <p className="latlong">{DMSlat}</p>
           <p className="latlong">{DMSlng}</p>
           <div className="align-content-center">
-            <div className="align-content-center crown-header-white">RADIUS (KM)</div>
+            <div className="align-content-center crown-header-white">RADIUS</div>
+            <p className="RadiusSize" style={{padding:'8px',color:'#fff'}}>10 km </p>
           </div>
 
           <AvForm className="radius-submit" onSubmit={changeRadius}>
+
             <AvField
               name="radius"
               type="number"
@@ -70,7 +72,7 @@ class LeftPanelComponent extends React.Component<Props> {
               required
               value={radius}
             />
-            <Button className="radius-button" type="submit"> Change </Button>
+           <Button className="radius-button" type="submit"> Change </Button>
           </AvForm>
         </div>
       </div>
