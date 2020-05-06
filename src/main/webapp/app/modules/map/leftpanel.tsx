@@ -14,9 +14,37 @@ type Props = StateProps & DispatchProps & OwnProps
 
 const img = "content/images/crown.png";
 
+
 class LeftPanelComponent extends React.Component<Props> {
-  render() {
+
+  toDegreesMinutesAndSeconds = (coordinate)=>{
+    const absolute = Math.abs(coordinate);
+    const degrees = Math.floor(absolute);
+    const minutesNotTruncated = (absolute - degrees) * 60;
+    const minutes = Math.floor(minutesNotTruncated);
+    const seconds = ((minutesNotTruncated - minutes) * 60).toFixed(1);
+
+    return degrees + "\xB0 " + minutes + "\u2032 " + seconds +"\x22";
+  }
+
+  convertDMS = (lat, lng) => {
+    const latitude = this.toDegreesMinutesAndSeconds(lat);
+    const latitudeCardinal = lat >= 0 ? "N" : "S";
+
+    const longitude = this.toDegreesMinutesAndSeconds(lng);
+    const longitudeCardinal = lng >= 0 ? "E" : "W";
+
+    return {
+      DMSlat: latitude + " " + latitudeCardinal,
+      DMSlng: longitude + " " + longitudeCardinal,
+    };
+  }
+
+
+  render(){
     const {position: {lat, lng}, radius, changeRadius} = this.props;
+    const {DMSlat, DMSlng} = this.convertDMS(lat, lng);
+
     return (
       <div className="left-panel shadow-lg p-3 mb-5 bg-blue rounded">
         <img src={img} style={{borderTopLeftRadius:'10px',borderTopRightRadius:'10px'}}/>
@@ -28,7 +56,8 @@ class LeftPanelComponent extends React.Component<Props> {
         </div>
 
         <div className="radius-info-div">
-          <p className="latlong">Coord: {lat}, {lng}</p>
+          <p className="latlong">{DMSlat}</p>
+          <p className="latlong">{DMSlng}</p>
           <div className="align-content-center">
             <div className="align-content-center crown-header-white">RADIUS (KM)</div>
           </div>
